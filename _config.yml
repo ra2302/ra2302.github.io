@@ -23,9 +23,7 @@ title: Ra-Sec                       # the main title
 tagline: Welcome!   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
-  A minimal, portfolio, sidebar,
-  bootstrap Jekyll theme with responsive web design
-  and focuses on text presentation.
+  A simple blog to show my learning and take notes of my progress
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: 'https://ra2302.github.io'
@@ -39,7 +37,7 @@ twitter:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: Ramneek Singh
+  name: Ra2302
   email: ramneek2302@gmail.com            # change to your email address
   links:
     # The first element serves as the copyright owner's link
