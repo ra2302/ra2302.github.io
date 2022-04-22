@@ -199,9 +199,9 @@ With this repository we were supposed to inspect the tags on the cloned reposito
 ![lvl30](/assets/bandits/31.png)
 
 ### Level 31
-This level aimed to introduce us to the concept of committing the code to github repositories. We have to commit the password to current user to the repository.  
+This level aimed to introduce us to the concept of committing the code to github repositories. We have to commit the password to current user to the repository.   
 ![lvl31](/assets/bandits/32.png)  
 
 ### Level 32
-As the last level of the game, we have another shell escape. The shell seems to convert every command to uppercase. It seemed to be an interactive shell running as a binary itself, hence when used $0(which returns the current shell name), we were provided with our trusty bash shell.
+As the last level of the game, we have another shell escape. The shell seems to convert every command to uppercase. It seemed to be an interactive shell running as a binary itself, hence when used $0(which returns the current shell name), we were provided with our trusty bash shell.  
 ![lvl32](/assets/bandits/33.png)
