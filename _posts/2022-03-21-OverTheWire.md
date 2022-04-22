@@ -139,3 +139,69 @@ Level 19 aims to introduce us to the concept of Setuid bits, I recommend reading
 In this level, we are provided with another suid bit binary. It makes a connection to the localhost on a specified port. We are supposed to provide the binary the password of bandit20 and we will get the pass to bandit21.  
 Now the way binary works is that, we have to first start a listener(using nc) on a desired port and make the binary connect to that port. We need both of them to be running concurrently. For that, we will background one process using CTRL+Z and use fg command to bring the desired process up. Once the binary is connected, Using nc we will supply the current password. Next we will switch to the suconnect binary using fg, where the password will be checked. Once verified we will get the password to bandit21, on our nc listener process.  
 ![lvl20](/assets/bandits/21.png)
+
+### Level 21
+Level 21 introduces us to the cron jobs. These jobs are automatically executed at a certain interval of time. First we'll check in the cron directory, /etc/cron.d and look for our next bandit's cron job. It seems to be a simple script, writing the value of the password to a random file in the /tmp directory.
+
+![lvl21](/assets/bandits/22.png)
+
+### Level 22 
+This time around we have another cron job but a tad bit more complex shell script. Here the script is first getting the username of the current user and afterwards md5 hash it. And it uses that same hash to create a file under the /tmp directory with password to next user. To find the hash value and hence the file name, we can simply hash the input ourselves on our local system as we already know what the input is.
+
+##### Images coming soon
+
+### Level 23
+Following the trend, this level also introduces us to another script running after certain intervals. This script executes every script present in the /var/spool/bandit24 directory. For this challenger I wrote a small script to output the password to next level in a file in /tmp directory.  
+Script:  
+![lvl23.1](/assets/bandits/24.1.png)  
+Output:  
+![lvl23.2](/assets/bandits/24.2.png)
+
+### Level 24 
+For this level we have a service listening on port 30002. To obtain the password of bandit 25, we need to supply a 4 digit pin-code. We are supposed to brute force it. So once again I wrote a small script to brute force the service with numbers ranging from 0000-9999.  
+Script:  
+![lvl24.1](/assets/bandits/25.1.png)  
+Output:  
+![lvl24.2](/assets/bandits/25.png)
+
+### Level 25
+This level introduces us to a new kind of shell, and not a regular ol' bash. We can actually use the previous user to find out what it reads.  
+Shell:  
+```
+bandit25@bandit:~$ cat /etc/passwd | grep bandit26
+bandit26:x:11026:11026:bandit level 26:/home/bandit26:/usr/bin/showtextbandit25@bandit:~$ cat /usr/bin/showtext
+#!/bin/sh
+export TERM=linux
+more ~/text.txt
+exit 0
+```
+It seems that our unique shell invokes more command upon execution. For this we are required to resize our terminal so that it just becomes a rectangle with a long width but less height to invoke the effects of more command. Once that is done, we just have to press V key and we can use :shell to get a small editor open.  
+![lvl25](/assets/bandits/26.png)
+
+### Level 26
+In this level we can using the similar method as in the previous level, we can get the shell. And similar to a past level, we have a suid bit binary. We can just use that to get the password to next level.
+![lvl26](/assets/bandits/27.png)
+
+### Level 27
+For this level we just have to clone a specific repository and find the password to next level from within that repo only.  
+![lvl27](/assets/bandits/28.png)
+
+### Level 28
+This level includes another repository but we have to look into the commit history in order to get the password to next level.  
+![lvl28](/assets/bandits/29.png)
+
+### Level 29
+Another level and another repository. In this one, the password is contained in a branch other than master.  
+![lvl29](/assets/bandits/30.png)
+
+### Level 30
+With this repository we were supposed to inspect the tags on the cloned repository.  
+![lvl30](/assets/bandits/31.png)
+
+### Level 31
+This level aimed to introduce us to the concept of committing the code to github repositories. We have to commit the password to current user to the repository.  
+![lvl31](/assets/bandits/32.png)  
+
+### Level 32
+As the last level of the game, we have another shell escape. The shell seems to convert every command to uppercase. It seemed to be an interactive shell running as a binary itself, hence when used $0(which returns the current shell name), we were provided with our trusty bash shell.
+![lvl32](/assets/bandits/33.png)
