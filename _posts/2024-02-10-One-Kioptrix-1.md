@@ -1,7 +1,7 @@
 ---
 title: One - Kioptrix 1 Writeup
 date: 2024-02-10 22:00:00 +0530
-categories: [Vulnhub]
+categories: [Vulnhub, Days of Security]
 tags: [vulnhub, metasploit, easy, exploit, vulnerability]
 ---
 

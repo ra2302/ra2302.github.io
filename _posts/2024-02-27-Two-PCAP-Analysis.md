@@ -1,7 +1,7 @@
 ---
 title: Two - LetsDefend - PCAP Analysis Challenge
 date: 2024-02-27 22:00:00 +0530
-categories: [LetsDefend]
+categories: [LetsDefend, Days of Security]
 tags: [LetsDefend, WireShark, easy, PCAP, Network Traffic Analysis ]
 ---
 
