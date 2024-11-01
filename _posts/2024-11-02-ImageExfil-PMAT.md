@@ -14,7 +14,7 @@ The binary, as I called it, is an ImageExfil malware, and as the name suggests, 
 
 ### Report 
 
-I'll be attaching the link to the report that is uploaded to my github reporsitory [here](../assets/pmat-bonus-binary/ImageExfil_Report.pdf). Please feel free to take a look at it. It contains all the data and I have written it as proper report following the template I found on the PMAT lab repository. 
+I'll be attaching the link to the report that is uploaded to my github reporsitory [here](https://github.com/ra2302/ra2302.github.io/blob/main/assets/pmat-bonus-binary/ImageExfil_Report.pdf). Please feel free to take a look at it. It contains all the data and I have written it as proper report following the template I found on the PMAT lab repository. 
 The next few reports will be much more professional as I plan to review different reports and different bits of malware. And I am really excited to deep dive into Malware Analysis & Research and Threat Inteliigence in general. 
 I do plan to implement the newly learned skills in my current workplace and hope it brings more value to me as a professional as well.
 Looking forward to share more analysis in the future.
