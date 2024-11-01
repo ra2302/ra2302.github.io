@@ -6,7 +6,7 @@ tags: [Malware Analysis]
 ---
 
 ## Intro
-So with my time being completely MIA and being lazy, I just want to mention that I was learning Malware Analysis and I have gained somewhat of a foothold in the same. This blog is just to highlight the same and share the first report that I wrote for a binary. Albeit it was a sample binary which is a part of the Practical Malware Analysis course from TCM Security. I still feel that it is a beginning to something wel, as I really really enjoyed my time working on the same and learning Malware analysis from scratch. 
+So with my time being completely MIA and being lazy, I just want to mention that I was learning Malware Analysis and I have gained somewhat of a foothold in the same. This blog is just to highlight the same and share the first report that I wrote for a binary. Albeit it was a sample binary which is a part of the Practical Malware Analysis course from TCM Security. I still feel that it is a beginning to something interesting, as I really really enjoyed my time working on the same and learning Malware analysis from scratch. 
 
 ### Bonus Binary from PMAT Labs
 
