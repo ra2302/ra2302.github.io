@@ -32,7 +32,7 @@ github:
   username: ra2302             # change to your github username
 
 twitter:
-  username: ramneek2302          # change to your twitter username
+  username: ra2302          # change to your twitter username
 
 social:
   # Change to your full name.
@@ -41,7 +41,7 @@ social:
   email: ramneek2302@gmail.com            # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://twitter.com/ramneek2302    # change to your twitter homepage
+    - https://twitter.com/ra2302    # change to your twitter homepage
     - https://github.com/ra2302       # change to your github homepage
     # Uncomment below to add more social links
     # - https://www.facebook.com/username
@@ -70,7 +70,7 @@ google_analytics:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: dark  # [light|dark]
+theme_mode: light  # [light|dark]
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
