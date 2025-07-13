@@ -1,6 +1,6 @@
 ---
 title: Four - TryHackMe - Diskrupt Forensics Challenge
-date: 2024-07-13 01:00:00 +0530
+date: 2025-07-13 01:00:00 +0530
 categories: [Days of Security, Digital Forensics, Incident Response, TryHackMe]
 tags: [Digital Forensics]
 ---
