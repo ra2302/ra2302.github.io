@@ -20,7 +20,7 @@ timezone: Asia/Kolkata
 
 title: Ra-Sec                       # the main title
 
-tagline: Welcome!   # it will display as the sub-title
+tagline: 欢迎来到我的网站!   # it will display as the sub-title
 
 description: >-                        # used by seo meta and the atom feed
   A blog to showcase my skillset and share the knowledge
@@ -32,7 +32,7 @@ github:
   username: ra2302             # change to your github username
 
 twitter:
-  username: ra2302          # change to your twitter username
+  username: Ra16848771          # change to your twitter username
 
 social:
   # Change to your full name.
@@ -41,7 +41,7 @@ social:
   email: ramneek2302@gmail.com            # change to your email address
   links:
     # The first element serves as the copyright owner's link
-    - https://twitter.com/ra2302    # change to your twitter homepage
+    - https://twitter.com/Ra16848771   # change to your twitter homepage
     - https://github.com/ra2302       # change to your github homepage
     # Uncomment below to add more social links
     # - https://www.facebook.com/username

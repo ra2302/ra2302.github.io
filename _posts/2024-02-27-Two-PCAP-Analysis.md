@@ -78,4 +78,3 @@ We'll head on to the IPv4 section and look for our server's IP address.
 
 And voila! We can see the answer in the duration section and with this our challenge is completed.
 
-***"The next performance will have a lot more.... zazz"***

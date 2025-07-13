@@ -1,5 +1,5 @@
 ---
-title: Four - PMAT Lab - Bonus Binary Malware Analysis
+title: Three - PMAT Lab - Bonus Binary Malware Analysis
 date: 2024-11-02 01:00:00 +0530
 categories: [Days of Security, Malware Analysis, PMAT]
 tags: [Malware Analysis]
