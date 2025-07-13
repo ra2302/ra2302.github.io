@@ -140,7 +140,6 @@ In the FAT32 partition, a tool related to the disk wiping was installed and then
 
 For this one, once again we have a very simple method. The FTK way. It is right there in the root section.
 
-The easier method being the FTK imager.  
 ![easy_way](/assets/diskrupt/imager_simple.png)
 
 Now for the question for the Analyst - 
