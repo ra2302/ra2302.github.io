@@ -39,7 +39,7 @@ This small script left us with marshal code. Since marshal code can only be deco
 
 ### Second Stage
 After following the decryption routine of the first script and decompiling the marshal code, the second script is visible.  
-The second script also follows a similar footprint but a lot more rigorous encryption. There is base85, zlib, AES, xor, RSA and a custom rc4 decryption routine. A private key is also included.    
+The second script also follows a similar footprint but with a lot more rigorous encryption. There is base85, zlib, AES, xor, RSA and a custom rc4 decryption routine. A private key is also included.    
 ![Second_Decryption_Routine](/assets/purehvnc-dropper/second_payload_decryptor.png)   
 
 This the decryptor function & exec function   
@@ -76,14 +76,14 @@ It turned out to be another base64 payload. Which is much more evident when the 
 ![wdckghr_crypted_2](/assets/purehvnc-dropper/dnspy_2.png)  
 
 It also reveals that the original file name is Wdckghr_crypted. It hold one key and one base64 and xor'ed text. And it attempts to use textbook methods to patch AMSI & ETW to seemless script execution.  
-AMSI
-![AMSIPatch](/assets/purehvnc-dropper/PatchAMSI.png)
+AMSI  
+![AMSIPatch](/assets/purehvnc-dropper/PatchAMSI.png)  
 ![AMSIPayload](/assets/purehvnc-dropper/AMSI_Payload.png)  
 
 These functions collect the address of AMSI buffer in memory & patches the AMSI in such a way that it will always return 0x80070057(64-bit), which is the error code for invalid argument.
 
 ETW  
-![ETWPatch](/assets/purehvnc-dropper/PatchETW.png)
+![ETWPatch](/assets/purehvnc-dropper/PatchETW.png)  
 ![ETWPayload](/assets/purehvnc-dropper/ETWPayload.png)  
 
 Similarly these collect the address of ETWEventWrite in memory & patches the ETW so that function will just "return"(Decoded payload - "C3") and do nothing. 
@@ -96,7 +96,7 @@ Below are the functions responsible for decoding and executing the next steps
 One small python script later, we have the next stage executable.  
 
 ### Fourth Stage
-Similar to the previous stage, it is another C# file. Just in this case, instead of a long base64 string, we have a byte array and the original name of the file is Sydxj.exe.  
+Similar to the previous stage, it is another C# file. Just in this case, instead of a long base64 string, we have a byte array and the original name of the file is Sydxj.exe.   
 
 ![DetectItEZ](/assets/purehvnc-dropper/DIE2.png)     
 This is .Net Reactor obfucated file but we don't really need to know about it much as it just follows a decryption routine, nothing else.  
@@ -118,7 +118,7 @@ To decode the byte array, I simply decided to patch the MeasureSpec() and modify
 And voila! We have final stage payload.  
 
 ### Final stage
-The final payload is a DLL file, which is once again written in C#, making it "semi" easier to analyse.   
+The final payload is a DLL file, which is once again written in C#, making it "semi" easier to analyse.  
 ![DLL_PE](/assets/purehvnc-dropper/final_dll1.png)   
 Once again this dll is protected by .NET Reactor obfuscator by [Eziriz](https://www.eziriz.com/dotnet_reactor.htm) which makes trying to read it normally exponentially hard. But luckily there is a tool call .[NET Reactor Slayer](https://github.com/SychicBoy/NETReactorSlayer) which made is super simple to deobfuscate and read with dnspy.  
 ![Net Reactor](/assets/purehvnc-dropper/net_reactor.png)  
@@ -137,7 +137,7 @@ This whole function is a loop executed with the help of labels.
 - RequestCombinedClient() is used to extract C2 details and Cert and it saves it to containerSummarizer
 - SendDetachedClient() is basically a flag. If it is set to be true, it means that the connection is established and it will be actively listening/reading information from C2 under the label IL_02DA. If it is set to false it will go to label IL_007F and retry connection
 - Under the label IL_007F it disposes all the variables set like previous SSLStream, Timer(matcherClient) and basically resets connection.
-- I will not be going into the depths of the all function seen here but the gist will be there
+- I will not be going into the depths of the all functions seen here but the gist is there
 
 To gather the C2 information, there another base64 and Gzip compressed text.  
 ![cert function](/assets/purehvnc-dropper/cert.png)  
@@ -176,7 +176,7 @@ Below are a couple of screenshots from wireshark. One with internet enabled and 
 
 #### IOCs 
 
-Hashes -
+Hashes -  
 61c0515c70a2b451d3d59f9450e5bd060f73290214ae6a6990db6adc04d534a7 - Initial lnk file   
 96637bc629ca866ab5aa176e7ccb3cff9f93c8f9d021520a97f527bfa9d56d7e - Wdckhgr_crypted - First stage after python execution  
 289c09d43faaae05702f477f648dfd336085983f8253f834acd24960469335b7 - Donut shellcode  
