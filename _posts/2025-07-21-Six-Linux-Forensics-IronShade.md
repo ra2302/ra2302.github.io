@@ -5,7 +5,7 @@ categories: [Days of Security, Digital Forensics, Linux, TryHackMe]
 tags: [Digital Forensics]
 ---
 ## Intro
-[IronShade](https://tryhackme.com/room/ironshade) is a medium difficulty linux forensics challenge. The story goes that we've setup a honeypot and have intentionally exposed a weak SSH and other ports to get attacked by an attacker. One such honeypot was compromised and now we're supposed to analyse what steps did the attacker take to compromise the machine and maitain persistence.  
+[IronShade](https://tryhackme.com/room/ironshade) is a medium difficulty linux forensics challenge. The story goes something like this - we've setup a honeypot and have intentionally exposed a weak SSH and other ports to get attacked by an attacker. One such honeypot was compromised and now we're supposed to analyse what steps did the attacker take to compromise the machine and maintain persistence.  
 Although it is a medium difficulty challenge, it didn't took as long as I expected it to take.
 
 ### Question 1
@@ -25,7 +25,7 @@ We have to check the crontab for all users. A simple one liner can do it. This o
 for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done
 ```
 ![crontab](/assets/ironshade/q3.png)  
-In this instance, root had the cronjob which we were looking for.  
+In this instance, root had the cronjob which we were looking for. printer_app is an ELF file.  
 
 ### Question 4
 Examine the running processes on the machine. Can you identify the suspicious-looking hidden process from the backdoor account?  
@@ -34,9 +34,9 @@ Examine the running processes on the machine. Can you identify the suspicious-lo
 ps -aux
 ```
 Command explanation -  
--a - Show processes for all users
--u - List users along with process info
--x - Show background processes as well
+-a - Show processes for all users  
+-u - List users along with process info  
+-x - Show background processes as well  
 
 Since we knew the malicious user account, I added a small grep as well.  
 ![ps](/assets/ironshade/q4.png)
@@ -60,16 +60,16 @@ A little bit of scrolling and we have the solution.
 ![service1](/assets/ironshade/q7_1.png)  
 ![service2](/assets/ironshade/q7_2.png)  
 
-Bonus service info -
+Bonus service info -  
 ![service_info](/assets/ironshade/service_info.png)  
 Sys_backup doesn't seem to exist. When checking in the Syslog, it was also visible that the file sys_backup never existed and it never ran successfully.
 ![syslog](/assets/ironshade/syslog.png)
 
-Not getting anymore sidetracked, moving on to the next question
+Not getting sidetracked anymore, moving on to the next question
 
 ### Question 8
 Examine the logs; when was the backdoor account created on this infected system?  
-Auth.log are of utmost importance when it comes to user related evidence. A quick grep we can view when the user was created.  
+Auth.log is of utmost importance when it comes to user related evidence. A quick grep we can view when the user was created.  
 ![new_user](/assets/ironshade/ne_user.png)
 
 This screenshot revealed one more thing. There was one more user which was created. That is worth investigating as well.  
@@ -78,7 +78,7 @@ It seems nothing much happened with this user. The user has been deleted and the
 
 ### Question 9
 From which IP address were multiple SSH connections observed against the suspicious backdoor account?  
-Auth.log for the win here again.
+Auth.log for the win here as well.
 ```
 cat auth.log* | grep -a mircoservice
 ```
@@ -91,7 +91,7 @@ Once again a little bit of auth.log scrolling and we have the answer.
 
 ### Question 11
 Which malicious package was installed on the host?  
-For this question we can check the dpkg logs. It holds all the logs for installation and deletion of all the packages.
+For this question we can check the dpkg logs. It holds the logs for installation and deletion of all the packages.
 ```
 cat dpkg.log | grep "install "
 ```
@@ -107,4 +107,4 @@ dpkg -l | grep pscanner
 ![dpkg_list](/assets/ironshade/dpkg_list.png)
 
 
-This concludes this room. I did revisit the questions and attempted to get the information through OSQuery and I learnt a lot more from that method but I didn't capture screenshots for that. So in this blog, we only got the simplistic method where we query and read everything manually. I wonder how much of it can be automated.
+This concludes this room. I did revisit the questions and attempted to get the information through OSQuery and I learnt a lot more from that method but I didn't capture screenshots for that. So in this blog, we only get the simplistic method where we query and read everything manually. I wonder how much of it can be automated.
