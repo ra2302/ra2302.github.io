@@ -1,5 +1,5 @@
 ---
-title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT
+title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT - Part of PXAStealer
 date: 2025-08-06 01:00:00 +0530
 categories: [Days of Security, Reverse Engineering, Incident Response, Malware Analysis]
 tags: [Malware Analysis]
