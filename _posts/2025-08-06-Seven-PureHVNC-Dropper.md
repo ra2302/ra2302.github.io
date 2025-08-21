@@ -6,7 +6,7 @@ tags: [Malware Analysis]
 ---
 ## Intro
 This piece of malware was spotted in one of the incident for which I led the response. It was executed, undetected by Defender for Endpoint and garned a full fledged IR investigation. I will not mention the whole IR process as this focuses more on the analysis of the dropper which was a multi-stage heavily obfucated python script & C# binary.  
-To give more context to it. It was a PXAStealer attack as seen on [SentinelOne](https://www.sentinelone.com/labs/ghost-in-the-zip-new-pxa-stealer-and-its-telegram-powered-ecosystem/). SentinelOne focused more on the PXAStealer(DLL) aspect, whereas this one is a later step in the infection chain leading to persistence.  
+To give more context to it. It was a PXAStealer attack as seen on [SentinelOne](https://www.sentinelone.com/labs/ghost-in-the-zip-new-pxa-stealer-and-its-telegram-powered-ecosystem/). SentinelOne focused more on the PXAStealer(DLL) aspect, whereas this one is a later step in the infection chain leading to persistence. All the IoCs will be mentioned in the appendix.  
 
 ### How we got here?
 The user received a phishing link on their personal email address and opened it on their corporate device and it started the infection. It originated through a  .lnk file which is consistent with previous PureHVNC and PXAStealer infections. The .lnk file included a obfuscated script which initiated the download of a master zip archive.  
@@ -179,7 +179,7 @@ Below are a couple of screenshots from wireshark. One with internet enabled and 
 
 Hashes -  
 61c0515c70a2b451d3d59f9450e5bd060f73290214ae6a6990db6adc04d534a7 - Initial lnk file  
-6a51160fd443d4ddf69e0424d494e12436fbe0898756eeae6c79c77718760516 - Sideloaded DLL   
+6a51160fd443d4ddf69e0424d494e12436fbe0898756eeae6c79c77718760516 - Sideloaded DLL(PXAStealer)   
 96637bc629ca866ab5aa176e7ccb3cff9f93c8f9d021520a97f527bfa9d56d7e - Wdckhgr_crypted - First stage after python execution  
 289c09d43faaae05702f477f648dfd336085983f8253f834acd24960469335b7 - Donut shellcode  
 5baa860a2ee10bc859f527c686ec8f25b74860fe5d0f9138f8c7aeeb8dade7f4 - Sydxj - Intermediary stage  
