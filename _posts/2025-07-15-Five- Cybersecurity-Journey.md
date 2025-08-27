@@ -12,6 +12,7 @@ So utilizing that opportunity, I am just here to mention what's next. In the fut
 - Malware development
 - Reverse Engineering & Malware Analysis
 - Azure Security
+- What I'll develop and analyse, I will execute it in my Azure Lab and work through the forensics and Incident response of it.
 
 Other than that, I do wish to indulge in Threat Intelligence side of things. I will try to delve into that wherever possible.    
 
