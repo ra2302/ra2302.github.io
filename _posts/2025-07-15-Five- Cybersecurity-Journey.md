@@ -6,7 +6,7 @@ tags: [Security Research]
 ---
 
 ## Intro
-The previous 5th blog felt so insignificant that I couldn't get myself to write it for nearly a month. It was a pentest report for the TryHackMe - Red Team Capstone Challenge. Instead here's a link to my [profile](tryhackme.com/p/ra23o2). 
+The previous 5th blog felt so insignificant that I couldn't get myself to write it for nearly a month. It was a pentest report for the TryHackMe - Red Team Capstone Challenge. Instead here's a link to my [profile](https://tryhackme.com/p/ra23o2). 
 
 So utilizing that opportunity, I am just here to mention what's next. In the future, expect articles on:  
 - Malware development
