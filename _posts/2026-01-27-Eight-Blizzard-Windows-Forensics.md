@@ -7,7 +7,7 @@ tags: [Digital Forensics]
 ## Intro
 [Blizzard](https://tryhackme.com/room/blizzard) is a medium difficulty windows forensics challenge. The scenario goes something like this - A critical alert was detected on Health Sphere Systems' database server. The security controls are still being established so the alerts have only come from the server. We're supposed to manually correlate and investigate the servers and workstations to understand the incident. The alert was generated on 03/24/2024 19:55:29.  
 
-The aim of the challenge for me was to develop a certain approach when it comes to DFIR. And for this article, to display my reasoning/thought process behind the same. 
+The aim of the challenge for me was to develop a certain approach when it comes to DFIR. And for this article, to display my reasoning/thought process behind the same.  
 
 ## Database Server Investigation
 ### Question 1  
@@ -22,7 +22,7 @@ What is the full file path of the binary used by the attacker to exfiltrate data
 
 While exploring the dbadmin user's folder, one particular application stood out. There was a random rclone executable in the user's folder along with some data dumps.  
 ![rclone](/assets/blizzard/2.png)  
-Similarly, there was another rclone folder under $home/AppData/Roaming. This one contained a conf file, which upon investigating contained "type", "user" and "pass" for an account. I suspected that the account was used for exfiiltration and took a copy of file. 
+Similarly, there was another rclone folder under $home/AppData/Roaming. This one contained a conf file, which upon investigating contained "type", "user" and "pass" for an account. I suspected that the account was used for exfiltration and took a copy of file. 
 ![rclone_config](/assets/blizzard/3.png)  
 
 Even though the dumps and the credentials present are a strong indicator that rclone was used for exfiltration, to solidify that further I checked Prefetch and AmCache and AppCompatCache. PreFetch seemed to be cleared/disabled.  
@@ -109,7 +109,7 @@ I got completely side-tracked here while investigating so now moving back, it se
 ### Question 5
 What file did the attacker leverage to gain access to the database server? Provide the password found in the file.  
 
-Once again, I stumbled upon a few scripts in the user's documents folder which happened to contian hardcoded credentials.
+Once again, I stumbled upon a few scripts in the user's documents folder which happened to contain hardcoded credentials.
 ![Hardcoded_creds](/assets/blizzard/21.png)
 
 ## User Account - Alexis Ramirez
