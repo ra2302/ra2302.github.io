@@ -36,7 +36,7 @@ Socat was used to upgrade to a proper shell.
 
 ### Execution
 The threat actor conducted most of the post-compromise activity through shells, initially it was socat, and on the later stages it was PowerShell with the help of PsExec.  
-Metaploit payloads were downloaded from C2 and executed(meterpreter) to perform hands on keyboard attack via PsExec. This pattern was common on all internal hosts. It was evident in bash history and PowerShell transcripts.  
+Metasploit payloads were downloaded from C2 and executed(meterpreter) to perform hands on keyboard attack via PsExec. This pattern was common on all internal hosts. It was evident in bash history and PowerShell transcripts.  
 
 The threat actor observed to be scanning, downloading and executing further payload from the C2.  
 ![root_histry](/assets/honeynet-initial-pot/root_history.png)  
@@ -138,7 +138,7 @@ Active connection of DMZ-GW host to C2.
 Download of additional files usitilised in data exfiltration
 ![CRM_C2](/assets/honeynet-CRM/all_attacker_activity.png)
 
-The IP address itself belongs to Digital Ocean. Possible abuse of discardable VPS service to perform this specific attack only.
+The IP address itself belongs to Digital Ocean. Possible abuse of discardable VPS service to perform this specific attack.
 
 ### Exfiltration
 Soon after the data was collected, the data exfiltration took place from the same CRM host only. The threat actor's PowerShell history shows exactly which tools were used and how the data was exfiltrated.  
@@ -217,7 +217,7 @@ vssadmin delete shadows /all quiet
 vssadmin delete shadows /all /quiet
 ```
 
-Post the final Mega exfiltration attempt, the threat actor clean up the residuals and deleted shadow copies to prevent recovery.  
+Post the final Mega exfiltration attempt, the threat actor cleaned up the residuals and deleted shadow copies to prevent recovery.  
 
 ### Impact
 On Day 8. the threat actor moved laterally to the main Domain Controller of the network and accessed SQL servers as well. On these servers they deployed BlackLock ransomware payload "pb.exe" which was extracted from a "hiddenfile.zip". This zip was downloaded from gofile[.]io hosting service.
@@ -263,17 +263,4 @@ EDFAE1A69522F87B12C6DAC3225D930E4848832E3C551EE1E7D31736BF4525EF
 ```
 
 ### MITRE ATT&CK
-| | Tools | Technique |
-| :---: | :---: | :---: |
-| **Initial Access** | Hydra | Brute Force: Password Guessing – T1110.001 |
-| **Execution** | rundll32 | System Binary Proxy Execution: Rundll32 – T1218.011 |
-| **Persistence** | Scheduled Tasks | Scheduled Task/Job: Scheduled Task – T1053.005 |
-| **Privilege Escalation** | SSH Keys / Scheduled Tasks | Unsecured Credentials: Private Keys – T1552.004 <br> Scheduled Task/Job: Scheduled Task – T1053.005 |
-| **Defense Evasion** | | Indicator Removal: Clear Windows Event Logs – T1070.001 <br> Impair Defenses: Disable or Modify Tools – T1562.001 |
-| **Credential Access** | procdump <br> mimikatz | OS Credential Dumping: LSASS Memory – T1003.001 <br> Unsecured Credentials: Credentials In Files – T1552.001 |
-| **Discovery** | systeminfo <br> netcat <br> schtasks | Network Service Discovery – T1046 <br> System Information Discovery – T1082 |
-| **Lateral Movement** | RDP <br> PsExec | Remote Services: Remote Desktop Protocol – T1021.001 <br> Lateral Tool Transfer – T1570 |
-| **Collection** | File System | Data from Local System – T1005 |
-| **Command and Control** |  |  |
-| **Exfiltration** | rclone <br> 7zip <br> Mega Cloud | Exfiltration Over Web Service: Exfiltration to Cloud Storage – T1567.002 |
-| **Impact** | Ransomware Binary <br> vssadmin | Data Encrypted for Impact – T1486 <br> Inhibit System Recovery – T1490 |
+![mitre_table](/assets/honeynet-SS/mitre_table.png)
