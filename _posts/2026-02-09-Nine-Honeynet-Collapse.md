@@ -6,10 +6,10 @@ tags: [Digital Forensics]
 ---
 
 ## Case Summary
-The intrusion began near the end of June 2025 after a threat actor was able to compromise a poorly configured wordpress honeypot on a Linux server in the organization's DMZ network. The threat actor was able to perform remote code execution(RCE) by modifying the 404 page on the web app after brute-forcing the credentials for wordpress login.  
+The intrusion began near the end of June 2025 when a threat actor was able to compromise a poorly configured wordpress honeypot on a Linux server in the organization's DMZ network. The threat actor was able to perform remote code execution(RCE) by modifying the 404 page on the web app after brute-forcing the credentials for wordpress login.  
 The threat actor was able to escalate privileges due to insecure back up of a root SSH key. Once root access was gained, attacker conducted recon acitivities in the DMZ zone, set up persistence using services and successfully compromised a user by finding plaintext credentials in the honeypot configuration file. Using the same credentials, attacker laterally moved to a windows server.  
-3 days later, suspicious activity was observed on IT-QA windows server. The threat actor logged in with stolen credentials, added persistence through scheduled task, downloaded psexec and procdump from C2 and dumped LSASS memory to a higher privileged user. Later the actor pivoted to the DMZ gaetway server with the newly acquired credentials with the help of PsExec.  
-On the Gateway host, a PsExec process was observed which further downloaded  meterpreter payload and executed with the help of rundll32. After the execution, a PowerShell child process was observed with notepad as the parent process. At the time of memory extraction, an active connection to C2 server was obseerved, and a connection from the gateway server to CRM server was also observed confirming lateral movement deeper into core corporate network.  
+3 days later, suspicious activity was observed on IT-QA windows server. The threat actor logged in with stolen credentials, added persistence through scheduled task, downloaded psexec and procdump from C2 and dumped LSASS memory to access a higher privileged user. Later the actor pivoted to the DMZ gateway server with the newly acquired credentials with the help of PsExec.  
+On the Gateway host, a PsExec process was observed which further downloaded  meterpreter payload and executed with the help of rundll32. After the execution, a PowerShell child process was observed with notepad as the parent process. At the time of memory extraction, an active connection to C2 server was obseerved, and a connection from the gateway server to CRM server was also observed from the same process confirming lateral movement deeper into core corporate network.  
 On the CRM server, various files and folders were observed, providing direct evidence of data exfiltration. Tools like 7zip, rclone, psexec were downloaded from C2 server, were renamed, and were utilised to exfiltrate data.  
 Using the same method as earlier, the actor used psexec to access Domain Controller and deployed the blacklock ransomware encrypting the files on DC, the SQL databases, deleting the backups. 
 
@@ -48,7 +48,7 @@ On the DMZ-GW server, an executable was dropped and ran from the C2. More info i
 
 ### Persistence
 The threat actor used services and scheduled tasks as the main source of persistence.  
-On the beachhead host, the threat actor created a service impersonating Kworker kernel process. It was observed to be attempting to connect to C2 server but the connection was failing. The binary used was chisel.  
+On the beachhead host, the threat actor created a service impersonating Kworker kernel process. It was observed to be attempting to connect to C2 server but the connection was failing.  
 
 ![persistence_beachhead](/assets/honeynet-initial-pot/kworker_service.png)  
 ![kworker_connection](/assets/honeynet-initial-pot/syslog_kworker_connections.png) 
@@ -64,7 +64,7 @@ After gaining the initial access to the beachhead honeypot server, the threat ac
 The threat actor enumerating the server and looking for ssh keys. Eventually finding the root key and logging in as the root user.  
 ![privilege_escalation_initial_pot](/assets/honeynet-initial-pot/priv_esc_initial.png)  
 
-Post getting root access to the beachhead server, the second set of privilege escalation takes place on the SRV-IT-QA server. Using the same implant (Coreinfo64.exe) as seen in Persistence section, the threat actor gained a local Administrator shell.  
+Post getting root access to the beachhead server, the second set of privilege escalation takes place on the SRV-IT-QA server. Using the same implant (Coreinfo64.exe) as seen in Persistence section, the threat actor gained a local Administrator shell and dumped LSASS memory to gain access to a higher privileged AD account.  
 
 ### Defense Evasion
 The threat actor only cleared security event logs on all windows hosts and some PowerShell transciprtions were deleted as well. Other than that the threat actor left residual files (dump files, staging file, exfiltrated zip files, etc) on the disk itself, and did not bother clearing shell history either.  
@@ -78,7 +78,7 @@ Post getting the root access on beachhead server, the threat actor was able to f
 Deceptipot config contains plaintext password. The same password is being reused for multiple services, recovery key and it was the password for the AD account as well.  
 ![deceptipot_config](/assets/honeynet-initial-pot/decepti_config.png)  
 
-Elevated credential were accessed on the SRV-IT-QA server. In the meterpreter session launched by the coreinfo64 payload as seen in persistence section, the threat actor dumped the LSASS process memory and downloaded the memory dump.  !
+Elevated credential were accessed on the SRV-IT-QA server. In the meterpreter session launched by the coreinfo64 payload as seen in persistence section, the threat actor dumped the LSASS process memory and downloaded the memory dump.  
 
 LSASS memory dump was found in C:\Windows\System32 directory
 ![lsass_dump](/assets/honeynet-elevate-pot/memory_dump.png)  
@@ -107,8 +107,8 @@ From SRV-IT-QA to SRV-DMZ-GW and to further in to the core network, PsExec was u
 Renamed PsExec binary in C drive.  
 ![psexec_c](/assets/honeynet-elevate-pot/pse.png)  
 
-PsExec service was also installed, referncing that this server was also accessed using PsExec.  
-![psexec_service](/assets/honeynet-elevate-pot/PSexec.png)
+PsExec service was also installed, referencing that this server was also accessed using PsExec.  
+![psexec_service](/assets/honeynet-elevate-pot/psexec.png)
 
 Prefectch file related to PSExecsvc confirms that asusmption.  
 ![psexec_prefetch](/assets/honeynet-elevate-pot/prefetch_evidence3.png)
@@ -163,7 +163,7 @@ The threat actor renamed files to masquerade them as normal windows activity. Th
 The data was then exfiltrated to Mega with the help of rclone. Mega config contains the user credentials.   
 ![mega_config](/assets/honeynet-CRM/mega_config.png)  
 
-The following commands from PS History show multiple exfiltration methods which were attempted. The first one being HTTP, second being native PowerShell and finally a successful exfiltration through Mega.  
+The following commands from PS History show multiple exfiltration methods which were attempted. The first one being HTTP, second being webdav and finally a successful exfiltration through Mega.  
 ```
 @"`
 [crmremote]`
@@ -220,7 +220,7 @@ vssadmin delete shadows /all /quiet
 Post the final Mega exfiltration attempt, the threat actor clean up the residuals and deleted shadow copies to prevent recovery.  
 
 ### Impact
-On Day 8. the threat actor moved laterally to the main Domain Controller of the network and accessed SQL servers as well. On these servers they deplyed BlackLock ransomware payload "pb.exe" which was extracted from a "hiddenfiie.zip". This zip was downloaded from gofile[.]io hosting service.
+On Day 8. the threat actor moved laterally to the main Domain Controller of the network and accessed SQL servers as well. On these servers they deployed BlackLock ransomware payload "pb.exe" which was extracted from a "hiddenfile.zip". This zip was downloaded from gofile[.]io hosting service.
 
 Zone ID contents displaying the download URL.  
 ![download_url](/assets/honeynet-SS/download_url.png)
@@ -231,7 +231,7 @@ The following artefacts were observed in the user's downloads folder.
 Renaming the payload to make it seem legit.  
 ![rename_payload](/assets/honeynet-SS/file_rename.png)
 
-Many files were obsreved to be encrypted.
+Many files were observed to be encrypted.
 ![encryption_DC](/assets/honeynet-SS/data_encryption.png)
 
 The following note was left on the Desktop of the host.
@@ -246,7 +246,7 @@ Initial Access and C2
 File Host
 hxxps[://]store5.gofile.io/download/web/e23cb33f-0e4d-4a5f-8c55-ea2d78057d40/HiddenFile.zip
 
-Kworker Binary (Chisel)
+Kworker Binary
 12205ef2084c6d2294faeab25bb11853a5ce7cff3a6e66dbe6c02615cec6d5ea
 
 windows-update.exe
