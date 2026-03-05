@@ -7,15 +7,15 @@ tags: [Digital Forensics]
 
 ## Case Summary
 The intrusion began near the end of June 2025 when a threat actor was able to compromise a poorly configured wordpress honeypot on a Linux server in the organization's DMZ network. The threat actor was able to perform remote code execution(RCE) by modifying the 404 page on the web app after brute-forcing the credentials for wordpress login.  
-The threat actor was able to escalate privileges due to insecure back up of a root SSH key. Once root access was gained, attacker conducted recon acitivities in the DMZ zone, set up persistence using services and successfully compromised a user by finding plaintext credentials in the honeypot configuration file. Using the same credentials, attacker laterally moved to a windows server.  
+The threat actor was able to escalate privileges due to insecure back up of a root SSH key. Once root access was gained, attacker conducted recon activities in the DMZ zone, set up persistence using services and successfully compromised a user by finding plaintext credentials in the honeypot configuration file. Using the same credentials, attacker laterally moved to a windows server.  
 3 days later, suspicious activity was observed on IT-QA windows server. The threat actor logged in with stolen credentials, added persistence through scheduled task, downloaded psexec and procdump from C2 and dumped LSASS memory to access a higher privileged user. Later the actor pivoted to the DMZ gateway server with the newly acquired credentials with the help of PsExec.  
-On the Gateway host, a PsExec process was observed which further downloaded  meterpreter payload and executed with the help of rundll32. After the execution, a PowerShell child process was observed with notepad as the parent process. At the time of memory extraction, an active connection to C2 server was obseerved, and a connection from the gateway server to CRM server was also observed from the same process confirming lateral movement deeper into core corporate network.  
+On the Gateway host, a PsExec process was observed which further downloaded  meterpreter payload and executed with the help of rundll32. After the execution, a PowerShell child process was observed with notepad as the parent process. At the time of memory extraction, an active connection to C2 server was observed, and a connection from the gateway server to CRM server was also observed from the same process confirming lateral movement deeper into core corporate network.  
 On the CRM server, various files and folders were observed, providing direct evidence of data exfiltration. Tools like 7zip, rclone, psexec were downloaded from C2 server, were renamed, and were utilised to exfiltrate data.  
 Using the same method as earlier, the actor used psexec to access Domain Controller and deployed the blacklock ransomware encrypting the files on DC, the SQL databases, deleting the backups. 
 
 ### Timeline
 
-![Attack_Timeline](/assets/honeynet-SS/DeceptiTech_Attack.drawio(8).png)
+![Attack_Timeline](/assets/honeynet-SS/DeceptiTech_report.drawio.png)
 
 ### Initial Access
 
@@ -135,7 +135,7 @@ Download of a suspected payload on beachhead host.
 Active connection of DMZ-GW host to C2.  
 ![DMZ_GW_C2](/assets/honeynet-ramslation/netscan_to_c2.png)  
 
-Download of additional files usitilised in data exfiltration
+Download of additional files utilised in data exfiltration
 ![CRM_C2](/assets/honeynet-CRM/all_attacker_activity.png)
 
 The IP address itself belongs to Digital Ocean. Possible abuse of discardable VPS service to perform this specific attack.
