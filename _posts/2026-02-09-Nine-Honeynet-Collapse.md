@@ -15,8 +15,7 @@ Using the same method as earlier, the actor used psexec to access Domain Control
 
 ### Timeline
 
-![Attack_Timeline](/assets/honeynet-SS/DeceptiTech_report.drawio.png)
-
+![Attack_Timeline](/assets/honeynet-SS/DeceptiTech_Report.drawio.png)
 ### Initial Access
 
 The first instance of unauthorized access to the network by the threat actor was observed when a poorly configured internet facing honeypot was brute forced. A sucessful logon was obsered to the beachhead host, after which a 404 wordpress page was modified to act as a gateway for remote code execution on the server.  
