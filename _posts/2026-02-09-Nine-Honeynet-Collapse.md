@@ -3,6 +3,7 @@ title: Nine - Honeynet Collapse - DeceptiTech DFIR Report
 date: 2026-02-27 01:00:00 +0530
 categories: [Days of Security, Digital Forensics, Windows, TryHackMe]
 tags: [Digital Forensics]
+pin: true
 ---
 
 ## Case Summary

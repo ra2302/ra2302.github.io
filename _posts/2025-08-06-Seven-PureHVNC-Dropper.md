@@ -3,6 +3,7 @@ title: Seven - Malware Analysis - Multi-Stage PureHVNC RAT - Part of PXAStealer
 date: 2025-08-06 01:00:00 +0530
 categories: [Days of Security, Reverse Engineering, Incident Response, Malware Analysis]
 tags: [Malware Analysis]
+pin: true
 ---
 ## Intro
 This piece of malware was spotted in one of the incident for which I led the response. It was executed, undetected by Defender for Endpoint and garned a full fledged IR investigation. I will not mention the whole IR process as this focuses more on the analysis of the dropper which was a multi-stage heavily obfucated python script & C# binary.  
