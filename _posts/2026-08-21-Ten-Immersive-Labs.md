@@ -1,6 +1,6 @@
 ---
 title: Ten - Immersive Labs | Accenture - SOC Lead Tech Pathway Certification 
-date: 2026-02-27 01:00:00 +0530
+date: 2026-08-21 01:00:00 +0530
 categories: [Days of Security, Digital Forensics, Windows, Malware Analysis, Linux]
 tags: [Digital Forensics]
 ---
