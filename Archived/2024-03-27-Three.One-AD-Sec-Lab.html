@@ -1,0 +1,140 @@
+<h2 id="intro">Intro</h2>
+<p>This lab is going to be the first of many. There is so much to learn and there is so much to experiment with here. It is going to be a great experience. So without further ado let’s start with an overview.</p>
+
+<h3 id="overview">Overview</h3>
+<p><img src="/assets/ad-lab/ad-lab-overview.png" alt="AD-Lab-overview" /></p>
+
+<p>The above diagram gives a brief overview of the whole lab. We have a total of 4 VMs set up. I’ll go through more info regarding each one.</p>
+<ol>
+  <li>Active Directory Server - It is a Windows server 2019 running ADDS services. 2 vCores and 2 Gigabytes of RAM is assigned, sufficient for our requirements. The image for the windows server installation can be acquired from the Microsoft Evaluation Center by providing the required info <a href="https://info.microsoft.com/ww-landing-windows-server-2019.html">here</a>. The static IP address for the server is 10.0.0.5.</li>
+  <li>Windows 10 - As the name suggests a simple installation of Windows 10 Pro. As with the server, 2 vCores and 2 Gigabytes of RAM assigned. You can download it using the official Microsoft tool <a href="https://www.microsoft.com/en-in/software-download/windows10">here</a>. The IP address will be dynamically assigned by the DHCP server.</li>
+  <li>Splunk Server - It is a Ubuntu 22.04 virtual machine running Splunk server. 2 vCores and 4 Gigabytes of RAM is provided. It is recommended to provide more resources but for the sake of this small lab, this much resources seem to be just enough. We can get the splunk trial from their official website <a href="https://www.splunk.com/en_us/download/splunk-enterprise.html">here</a>. The IP address assigned should be static. In my case it already had a static IP so, no configuration needed. In the next part, I’ll show how to assign static IP address to ubuntu if that is not the case for you.</li>
+  <li>Kali Machine - It needs no explaination, it is the benchmark linux distribution for pentesting, best for our use to generate telemetry for our small lab. I am using WSL(Windows Subsystem for Linux) to run Kali as it takes less resources this way. If you want to implment it in the way I did it, you can refer to their offiical documentation <a href="https://www.kali.org/docs/wsl/wsl-preparations/">here</a>. The process can be a bit tedious on Windows 10, but it very simple for Windows 11. So I recommend if you don’t want extra hassle and have extra resources to spare, just spin up another Kali VM. The IP address will be DHCP assigned only.</li>
+</ol>
+
+<p>Note - All the VMs are on the same NAT network. It is a  default network with VirtualBox and VMware. <strong>Make sure that all the VMs are on NAT network to ensure connectivity.</strong> If you wish to avoid any contact with internet(not recommended for installation segments) you can proceed with host-only network or custom networks.</p>
+
+<p><strong>There are a few things which are not covered in this blog</strong></p>
+<ol>
+  <li>Installation of any VM will not be covered whatsoever.</li>
+  <li>Setup of VMware or VirtualBox will not be covered.</li>
+  <li>Only the configuration of the Windows Server, Windows 10, Splunk server will be covered.</li>
+  <li>Attacker Machine i.e. Kali installation will not be covered whatsoever.</li>
+  <li>The Splunk server installation and configuration will be covered in the next part. Only Active Directory part is covered here.</li>
+</ol>
+
+<p>Let’s begin with the configuration then!</p>
+
+<h3 id="windows-server-configuration">Windows Server Configuration</h3>
+<p>Assuming that Windows Server is successfully installed, we’ll be greeted by the trusty Server Manager.<br />
+<img src="/assets/ad-lab/Server_manager.png" alt="server manager" /></p>
+
+<p>But before we head on with the server configuration we need to rename the server. (And not make the mistake I made. I configured the server, promoted it to Domain controller and then to rename the server I had to demote the server and redo it :))<br />
+Doing that is fairly simple. Search “This PC” on search bar and open properties.  <br />
+<img src="/assets/ad-lab/rename_prop.png" alt="server rename" /></p>
+
+<p>Here we’ll click “Change Settings” and click on rename the server. It’s as easy as it can get.<br />
+<img src="/assets/ad-lab/remaned.png" alt="renamed server" /></p>
+
+<p>With the server renamed, let’s get started with getting the Active Directory Domain Services installed. For that, we’ll return to the Server Manager and head over to the “Add Roles and Features” section as shown in the screenshot below.<br />
+<img src="/assets/ad-lab/Manage_Roles.png" alt="manage_roles" /></p>
+
+<p>Here we’ll select Role-Based installation. <br />
+<img src="/assets/ad-lab/Role_Based.png" alt="role_based" /></p>
+
+<p>Select the desired server. In my case it’s just one available.<br />
+<img src="/assets/ad-lab/Select_Server.png" alt="select_server" /></p>
+
+<p>Select the AD DS services, then add features as shown below and defaults should be fine so click next until the installtion page.<br />
+<img src="/assets/ad-lab/ADDS.png" alt="ad_ds_install" /></p>
+
+<p>Once the installation is completed, we can close the dialog and proceed with the promotion of the server to the Domain Controller status.<br />
+<img src="/assets/ad-lab/Install_Complete.png" alt="install_complete" /></p>
+
+<p>To promote the server click the yellow exclamation mark near the flag and you should be able to see the option to promote the server.<br />
+<img src="/assets/ad-lab/Promote.png" alt="promote" /></p>
+
+<p>We should be greeted with the Deployment Configuration dialog. Here, we’ll create a new forest.<br />
+<img src="/assets/ad-lab/New_Forest.png" alt="new_forest" /></p>
+
+<p>Next, we’ll set up the DSRM (Directory Services Restore Mode) Password.<br />
+<img src="/assets/ad-lab/DSRM_Pass.png" alt="DSRM_Pass" /></p>
+
+<p>You shouldn’t need to make any adjustments to the in-between settings so we can directly jump straight to pre-requisite checks.<br />
+<img src="/assets/ad-lab/check_install.png" alt="check_install" /></p>
+
+<p>Here you can notice that we don’t have a static IP address, which is a must for the server. So up next we’ll proceed to fix that.<br />
+Right click the network tab on the bottom right and select the “Network and internet settings”. After that we’ll head over to Network and sharing center. 
+<img src="/assets/ad-lab/network_Settings.png" alt="network_settings" /></p>
+
+<p>In the network and sharing settings, head over to the “Change adapter settings” and then to the properties of the network adapter. Followed by IPv4 properties as shown.<br />
+<img src="/assets/ad-lab/network_properties.png" alt="network_properties" /></p>
+
+<p>As per the diagram shown in the overview section, I’ve set the static IP address and the default gateway. If you’re unaware of your default gateway, make sure to confirm it on powershell using “ipconfig /all” command as shown below.<br />
+<img src="/assets/ad-lab/network_set.png" alt="network_set" /></p>
+
+<p>Once that is done, we can check connectivity and our updated settings in powershell (Check your default gateway/network settings here before implementing). A simple ping command tells us that it is working.<br />
+<img src="/assets/ad-lab/network_test.png" alt="network_test" /></p>
+
+<p>Before we move on to the Windows 10 machine. Let’s create a couple of Organisational units and users so that we can login to the Active Directory as normal users.
+For that we’ll go back to the server manager and to the AD users and computers section.<br />
+<img src="/assets/ad-lab/Ad-user-settings.png" alt="ad-user-settings" /></p>
+
+<p>Here, we’ll right click that domain that we’ve created and create a new Organisational Unit.<br />
+<img src="/assets/ad-lab/Ad_ou.png" alt="ad_ou" /></p>
+
+<p>I’ve created two units, one IT and the other as HR. Right click on each new unit, go to the new section and user afterwards to create a new user.  <br />
+<img src="/assets/ad-lab/ad_user_setting.png" alt="ad_user_creation" /></p>
+
+<p>Here, enter all the desired information and on the next page create a password as shown below.  <br />
+<img src="/assets/ad-lab/ad_user_creation.png" alt="ad_user_create" /><br />
+<img src="/assets//ad-lab/ad_user_pass.png" alt="ad_user_pass" /></p>
+
+<p>Next we’ll right click the user in IT unit and go to the properties tab. Go to the “Member of” section and add it to the Administrators groups.<br />
+<img src="/assets/ad-lab/ad_user_admin.png" alt="ad_user_admin" /><br />
+With this, we’ve got a couple of users to login with.</p>
+
+<h3 id="windows-10-configuration">Windows 10 Configuration</h3>
+<p>Now let’s head over to our Windows 10 machine. Before we onboard it to our domain, we first have to change the DNS address to the one of our Active Directory Domain Controller because we’re working with a local domain only, we can’t query it to the web. Just like we set up the static IP on the server, we’ll follow the same steps. Network &amp; Sharing center &gt; Change Adapter settings &gt; Adapter Properties &gt; IPv4 configuration. <br />
+<img src="/assets/ad-lab/ad_user_ip.png" alt="ad_user_ip" /><br />
+<img src="/assets/ad-lab/ad_user_dns.png" alt="ad_user_ip_set" /></p>
+
+<p>Next up, just like we renamed our server, we’ll rename the Windows 10 machine as well. We’ll head over to the properties and click on rename this PC option.<br />
+<img src="/assets/ad-lab/Rename_user.png" alt="ad_rename_pc" /><br />
+<img src="/assets/ad-lab/renamed_user.png" alt="ad_renamed_pc" /></p>
+
+<p>Once renamed, if we scroll down on the same page, we’ll see “Advanced System Settings”. Clicking there we’ll see an option to change the domain on the computer. Here we’ll add our created domain and it will prompt us for user and password. I’ll use one of newly created users for that.<br />
+<img src="/assets/ad-lab/ad_user_login.png" alt="ad_user_login" /></p>
+
+<p>It will prompt us to login again. When the windows login screen will appear, make sure to select “Other User” in the bottom left and make sure that it says that we’re logging in to a damain as highlighted below.<br />
+<img src="/assets/ad-lab/ad_user_login_ad.png" alt="ad_user_login_ad" /></p>
+
+<p>Now you should be greeted with the Windows 10 home screen. 
+With the Windows 10 configuration completed next step is to install Sysmon on both, server and the user machine.</p>
+
+<h3 id="sysmon-installation">Sysmon Installation</h3>
+
+<p>I will only cover the installation of sysmon on the server because the steps are inherently same on both server and the windows 10 machine.
+In the windows server, we’ll head on to the Sysmon’s website <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon">here</a> and download the latest version available. <br />
+<img src="/assets/ad-lab/sysmon_install.png" alt="sysmon_install" /></p>
+
+<p>Now we’ll open an administrator powershell.<br />
+Note - On the server it might not ask you for authentication, but when doing the same on windows 10 machine it will ask for admin user and pass. Make sure to supply administrator credentials as shown below.
+<img src="/assets/ad-lab/UAC_ad_user.png" alt="UAC" /></p>
+
+<p>Before we go ahead with the setup of Sysmon, we’ll require a basic configuration for the same as well. We can get configuration from <a href="https://github.com/olafhartong/sysmon-modular">this</a>. I’ll be using <a href="https://github.com/olafhartong/sysmon-modular/blob/master/sysmonconfig-with-filedelete.xml">sysmonconfig-with-filedetele.xml</a>.<br />
+<img src="/assets/ad-lab/sysmon_config_git.png" alt="sysmon_git" /></p>
+
+<p>In the administrator powershell, I’ll head over to the folder where I extracted sysmon using the “cd” command and then I’ll run the following command.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>.\Sysmon64.exe -i .\sysmonconfig-with-filedelete.xml
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>Here “-i” installs the service using our provided config file. <br />
+<img src="/assets/ad-lab/sysmon_config.png" alt="sysmon_with_config" /></p>
+
+<p>We’ll be greeted by EULA, which after accepting we can see that Sysmon will be installed and running. <br />
+<img src="/assets/ad-lab/sysmon_eula.png" alt="Sysmon_eula" /><br />
+<img src="/assets/ad-lab/sysmon_started.png" alt="sysmon_started" /></p>
+
+<p>With this our Active Directory segment is pretty much ready. The only part left right now is to install our splunk server and install splunk universal forwarder on our server and to the Windows 10 machine. Both the things will be covered in the part two.<br />
+For any troubleshooting help feel free to reach out to me on my socials.</p>

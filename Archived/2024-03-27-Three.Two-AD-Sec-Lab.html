@@ -1,0 +1,149 @@
+<h3 id="overview">Overview</h3>
+<p>With our Active Directory set up for the most part, in this part, I’ll focus mainly on the splunk server and it’s configuration. I’ll put the diagram of the lab here for reference.<br />
+<img src="/assets/ad-lab/ad-lab-overview.png" alt="overview" /></p>
+
+<h3 id="splunk-installation">Splunk Installation</h3>
+<p>To begin with the installation we start by getting our splunk trial. For that we’ll head over to their official website (<a href="https://www.splunk.com/en_us/download/splunk-enterprise.html">here</a>) and fill in the required info. If you already have an account with splunk, you should be good to go without filling in any info. 
+You can get the Linux version under the linux section. I’ll be downloading the .deb version for ubuntu installation.</p>
+
+<p>Installing splunk on Linux is very straightforward. Once downloaded we can use the dpkg utility to install splunk.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>sudo dpkg -i splunk*
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p><img src="/assets/ad-lab/splunk_installed.png" alt="splunk_installed" /></p>
+
+<p>It’ll be installed under /opt directory.<br />
+<img src="/assets/ad-lab/splunk_dir.png" alt="splunk_dir" /></p>
+
+<p>As you can see all the files are owned by the “splunk” user, so we’ll switch over to the splunk user and head to the /bin directory where all binaries related to splunk are stored. Once there, I’ll use the splunk binary to start the server.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>sudo -su splunk
+cd bin/
+./splunks start
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p><img src="/assets/ad-lab/splunk_user.png" alt="splunk_user" />
+<img src="/assets/ad-lab/splunk_start.png" alt="splunk_start" /></p>
+
+<p>Once that is done, it will ask you to input the username and password of choice. Make sure to remember these well, as these will be the admin credentials to log into the splunk web interface.<br />
+Before we leave our commandline let’s make sure that splunk will start everytime the machine is rebooted.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>sudo ./splunk enable boot-start -user splunk
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p><img src="/assets/ad-lab/splunk_boot.png" alt="splunk_boot" /></p>
+
+<p>With this, the splunk web interface is live on port 8000 and we can head over to our Windows server to install splunk forwarder.</p>
+
+<h3 id="forwarder-installation">Forwarder Installation</h3>
+<p>You can download the Splunk Universal Forwarder <a href="https://www.splunk.com/en_us/download/universal-forwarder.html">here</a>.</p>
+
+<p>Launching the installer, first we’ll select the on-prem Splunk instance and check the license agreement. And select the customise options button.<br />
+<img src="/assets/ad-lab/forwarder_install_sv.png" alt="forwarder_install" /></p>
+
+<p>Next, we’ll select the Local System option.<br />
+<img src="/assets/ad-lab/forwarder_local_system.png" alt="forwarder_local" /></p>
+
+<p>We’ll select the log sources which we want. I have selected a few as shown below.<br />
+<img src="/assets/ad-lab/forwarder_logs.png" alt="forwarder_logs" /></p>
+
+<p>When it asks for credentials, you can put in any username.<br />
+<img src="/assets/ad-lab/forwarder_user.png" alt="forwarder_user" /></p>
+
+<p>Click next until it asks for Receiving Indexer. Here we’re supposed to provide our splunk server IP and port. For port, I’m using the default port only i.e. 9997.<br />
+<img src="/assets/ad-lab/forwarder_recv_ip.png" alt="forwarder_recv" /></p>
+
+<p>With this our forwarder should be installed properly.<br />
+<img src="/assets/ad-lab/forwarder_finish.png" alt="forwarder_install" /></p>
+
+<p>Next we need to make some configurational changes. All the general configurations for the forwarder are stored in a specific “default” directory. (You can see the path below)
+<img src="/assets/ad-lab/forwarder_default_conf.png" alt="forwarder_directory" /></p>
+
+<p>Here we need to make addition to the inputs.conf file to make sure that it forwards sysmon logs as well. But we’ll NOT make any changes in default directory as it is the failsafe directory. Instead we’ll head over to the local directory and create a new inputs.conf file. (You can see the path below).<br />
+<img src="/assets/ad-lab/forwarder_new_conf.png" alt="forwarder_input" /></p>
+
+<p>We’ll be using the following input configuration.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre>[WinEventLog://Application]
+index = endpoint
+disabled = false
+
+[WinEventLog://Security]
+index = endpoint
+disabled = false
+
+[WinEventLog://System]
+index = endpoint
+disabled = false
+
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+index = endpoint
+disabled = false
+renderXml = true
+source = XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Here you can also notice that all the logs will be forwarded to the “endpoint” index.
+<img src="/assets/ad-lab/forwarder_input.png" alt="forwarder_input_conf" /></p>
+
+<p>Next, since we updated the config file, we’ll have to restart the forwarder service. For that, we’ll head over to the services app. <br />
+<img src="/assets/ad-lab/forwarder_restart_services.png" alt="services" /></p>
+
+<p>We’ll find the splunk forwarder and click on the restart button.<br />
+<img src="/assets/ad-lab/forwarder_restart_button.png" alt="forwarder_restart" /></p>
+
+<p>Now the Forwarder installation is completed. A little bit of configuration on the splunk web interface and we’re good to go!<br />
+PS - I have skipped over the forwarder installation on the windows 10 machine because the steps are exactly the same. The only thing that’ll change is that we’ll need to put in administrator credentials when asked.</p>
+
+<h3 id="web-configuration">Web Configuration</h3>
+<p>When visiting the port 8000 of our splunk server. We should be greeted with the splunk login page. Here you are supposed to use the credential which you setup during the splunk installation.<br />
+<img src="/assets/ad-lab/splunk_login.png" alt="splunk_login" /></p>
+
+<p>If you recall, all our logs are forwarded to the “endpoint” index. But is not a default index in splunk, so we’ll be creating a new index. For that we’ll head over to settings &gt; indexes &gt; New Index. And put in the name as “endpoint”.<br />
+<img src="/assets/ad-lab/web_index.png" alt="web_index" /><br />
+<img src="/assets/ad-lab/web_new_index.png" alt="web_new_index" /></p>
+
+<p>Once it is done we should be able to see our new index.<br />
+<img src="/assets/ad-lab/web_new_index_created.png" alt="web_new_created" /></p>
+
+<p>Next, we’ve to configure our splunk instance to receive logs at the specified port. If you remember, we used the default port i.e. 9997 in the forwarder. So here we have to configure the same in the splunk server as well.<br />
+For that, we’ll head over to Forwarding and Receiving section under settings.<br />
+<img src="/assets/ad-lab/web_rev_forwd.png" alt="web_rev_conf" /></p>
+
+<p>Here. we’ll click on configure receiving and instruct it to listen on port 9997.<br />
+<img src="/assets/ad-lab/web_conf_rev.png" alt="web_conf_rev" />
+<img src="/assets/ad-lab/web_conf_rev_9997.png" alt="web_conf_rev_9997" /></p>
+
+<p>We should be able to see one entry in the receiving section now.
+<img src="/assets/ad-lab/web_conf_rev_9997_created.png" alt="web_conf_created" /></p>
+
+<p>Now all that’s left to do is, query our newly created index.<br />
+For that, we’ll head over to the seach and indexing section on splunk. I’ll run a basic query for our “endpoint” index.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>index="endpoint"
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p><img src="/assets/ad-lab/web_log_incoing.png" alt="web_logs" /></p>
+
+<p>We can see the logs here. And to confirm that both our machines are sending logs, we can check the hosts section.</p>
+
+<p><img src="/assets/ad-lab/web_two_host.png" alt="web_logs_hosts" /></p>
+
+<p>And we’ve successfully setup the lab! There is a lot more to come with lab. A lot more breaking and a lot more making. I recommend that at this point you create a snapshot of all the VMs in the virtualisation tool so that you’ll have a failsafe if somethings goes wrong with VMs. Until next time!</p>
+
+<p><strong><em>“My performance begins”</em></strong></p>
